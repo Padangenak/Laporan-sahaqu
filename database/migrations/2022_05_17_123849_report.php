@@ -13,11 +13,14 @@ class Report extends Migration
      */
     public function up()
     {
-        Schema::create('report', function (Blueprint $table) {
+        Schema::create('reports', function (Blueprint $table) {
             $table->id();
             $table->foreignId('participant_id');
             $table->string('status');
             $table->string('type');
+            $table->bigInteger('create');
+            $table->foreignId('day_id');
+            $table->timestamps();
         });
     }
 

@@ -34,8 +34,10 @@
     </div>
   </div>
 </nav>
-
-
+@php
+$milis = round(microtime(true) * 1000);
+@endphp
+{{-- @dd(date("Y-m-d l H:i:s",($milis/1000))) --}}
 {{-- Login modal --}}
 
 
@@ -44,7 +46,7 @@
 
   <div class="modal-content">
     <div class="box has-text-centered">
-<h1 class="title">Login</h1>
+      <h1 class="title">Login</h1>
       <form action="{{ url("login") }}">
         @csrf
         <input type="text" name="username" class="input" placeholder="Username">
@@ -58,18 +60,31 @@
 
 </div>
 
+      {{--       @if(date("l",($report->create/1000)) == "Monday" && date("l",($report->create/1000)) == "Tuesday" && date("l",($report->create/1000)) == "Wednesday" && date("l",($report->create/1000)) == "Thursday" && date("l",($report->create/1000)) == "Friday" && date("l",($report->create/1000)) == "Saturday" && date("l",($report->create/1000)) == "Sunday")
 
+      @endif --}}
 
-<br>
+      <br>
 {{-- <span style='font-size:100px;'>&#10060;</span>
 <span style='font-size:100px;'>&#128077;</span>
 <span style='font-size:100px;'>&#9989;</span> --}}
 <div class="container">
   <br><br>
+  @if(session('success'))
+  <div class="notification is-success">
+    {{ session('success') }}
+  </div>
+  @endif
+  @if($errors->first('reportTahajjud'))
+  <div class="notification is-success">
+    Nama Harus di Isi
+  </div>
+  @endif
+  
   <div class="control">
     <label class="radio is-capitalized">
       <input type="radio" name="answer" value="tahajjud" onclick="shalat('tahajjud')" checked>
-        <strong>Tahajjud</strong>
+      <strong>Tahajjud</strong>
     </label>
     <label class="radio">
       <input type="radio" name="answer" value="dhuha" onclick="shalat('dhuha')">
@@ -88,16 +103,56 @@
           Peserta Tahajjud
         </div>
       </div>
+
+
+
+      @php
+      // array ie ker nyirian
+      $collects_tahajjud = collect([]);
+      $collects_dhuha = collect([]);
+      @endphp
+
+{{-- array tahajjud, ker nyirian anu ges beres ngerjakeun --}}
+
+      @foreach($participants as $participant)
+      @foreach($reports as $report)
+      @if($report->participant_id == $participant->id && $report->day_id == $maxdays && date("l",($report->create/1000)) == date("l",($time/1000)) && $report->type == "tahajjud")
+      @php
+      $collects_tahajjud->push($participant->id);  
+      @endphp
+      @endif
+      @endforeach
+      @endforeach
+
+{{-- array dhuha, ker nyirian anu ges beres ngerjakeun --}}
+
+      @foreach($participants as $participant)
+      @foreach($reports as $report)
+      @if($report->participant_id == $participant->id && $report->day_id == $maxdays && date("l",($report->create/1000)) == date("l",($time/1000)) && $report->type == "dhuha")
+      @php
+      $collects_dhuha->push($participant->id);  
+      @endphp
+      @endif
+      @endforeach
+      @endforeach
+
+
+{{-- insert value tahajjud --}}
+
       <div class="card-content">
-        <form action="{{ url("tahajjud/request") }}" method="post">
+        <form action="{{ url("tahajjud") }}" method="post">
           @csrf
           <div class="select">
-            <select name="report" id="">
-              <option value="">Select Name</option>
-              <option value="rizky">rizky</option>
-              <option value="rizal">rizal</option>
+            <select name="reportTahajjud" id="">
+              <option value="">--Select Name--</option>
+              @foreach($participants as $participant)
+              @if($collects_tahajjud->contains($participant->id) == false)
+              <option value="{{ $participant->id }}">{{ $participant->name }}</option>
+              @endif
+              @endforeach
             </select>
           </div>
+          <input type="text" value="{{ $milis }}" class="is-hidden" name="milis">
           <button class="button">SET</button>
         </form>
       </div>
@@ -106,7 +161,7 @@
     <div class="card">
       <div class="card-header">
         <div class="card-header-title">
-          Table Tahajjud 17 agustus 2022
+          Table Tahajjud {{ date("j",($time/1000)) }} {{ date("F",($time/1000)) }} {{ date("Y",($time/1000)) }}
         </div>
       </div>
       <div class="card-content">
@@ -125,61 +180,66 @@
             </tr>
           </thead>
           <tbody>
+            @php
+            $i=0;
+            @endphp
+            @foreach($participants as $participant)
             <tr>
-              <td>1</td>
-              <td>rizky</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
+              <td>{{ ++$i }}</td>
+              <td>{{ $participant->name }}</td>
+
+              <td>
+                @foreach($reports as $report)
+                @if(date("l",($report->create/1000)) == "Monday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "tahajjud")
+                v
+                @endif
+                @endforeach
+              </td>
+              <td>
+                @foreach($reports as $report)
+                @if(date("l",($report->create/1000)) == "Tuesday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "tahajjud")
+                v
+                @endif
+                @endforeach
+              </td>
+              <td>
+                @foreach($reports as $report)
+                @if(date("l",($report->create/1000)) == "Wednesday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "tahajjud")
+                v
+                @endif
+                @endforeach
+              </td>
+              <td>
+                @foreach($reports as $report)
+                @if(date("l",($report->create/1000)) == "Thursday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "tahajjud")
+                v
+                @endif
+                @endforeach
+              </td>
+              <td>
+                @foreach($reports as $report)
+                @if(date("l",($report->create/1000)) == "Friday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "tahajjud")
+                v
+                @endif
+                @endforeach
+              </td>
+              <td>
+                @foreach($reports as $report)
+                @if(date("l",($report->create/1000)) == "Saturday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "tahajjud")
+                v
+                @endif
+                @endforeach
+              </td>
+              <td>
+                @foreach($reports as $report)
+                @if(date("l",($report->create/1000)) == "Sunday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "tahajjud")
+                v
+                @endif
+                @endforeach
+              </td>
+              
             </tr>
-            <tr>
-              <td>2</td>
-              <td>rizky</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>rizky</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td>rizky</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-            </tr>
-            <tr>
-              <td>5</td>
-              <td>rizky</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-            </tr>
+            @endforeach
           </tbody>
         </table>
       </div>
@@ -190,6 +250,9 @@
   {{-- dhuha tadina arek spa, ngan kagok ah jadi pake is-hidden :3 --}}
 
 
+{{-- insert value dhuha  --}}
+
+
   <div id="dhuha" class="is-hidden">
     <div class="card">
       <div class="card-header">
@@ -198,14 +261,18 @@
         </div>
       </div>
       <div class="card-content">
-        <form action="{{ url("tahajjud/request") }}" method="post">
+        <form action="{{ url("dhuha") }}" method="post">
           @csrf
           <div class="select">
-            <select name="report" id="">
-              <option value="">Select Name</option>
-              <option value="rizky">rizky</option>
-              <option value="rizal">rizal</option>
+            <select name="reportDhuha" id="">
+              <option value="">--Select Name--</option>
+              @foreach($participants as $participant)
+              @if($collects_dhuha->contains($participant->id) == false)
+              <option value="{{ $participant->id }}">{{ $participant->name }}</option>
+              @endif
+              @endforeach
             </select>
+            <input type="text" value="{{ $milis }}" class="is-hidden" name="milis">
           </div>
           <button class="button">SET</button>
         </form>
@@ -215,7 +282,7 @@
     <div class="card">
       <div class="card-header">
         <div class="card-header-title">
-          Table Dhuha 17 Agustus 2022
+          Table Dhuha {{ date("j",($time/1000)) }} {{ date("F",($time/1000)) }} {{ date("Y",($time/1000)) }}
         </div>
       </div>
       <div class="card-content">
@@ -234,61 +301,64 @@
             </tr>
           </thead>
           <tbody>
+            @php
+            $i=0;
+            @endphp
+            @foreach($participants as $participant)
             <tr>
-              <td>1</td>
-              <td>rizky</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
+              <td>{{ ++$i }}</td>
+              <td>{{ $participant->name }}</td>
+              <td>
+                @foreach($reports as $report)
+                @if(date("l",($report->create/1000)) == "Monday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "dhuha")
+                v
+                @endif
+                @endforeach
+              </td>
+              <td>
+                @foreach($reports as $report)
+                @if(date("l",($report->create/1000)) == "Tuesday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "dhuha")
+                v
+                @endif
+                @endforeach
+              </td>
+              <td>
+                @foreach($reports as $report)
+                @if(date("l",($report->create/1000)) == "Wednesday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "dhuha")
+                v
+                @endif
+                @endforeach
+              </td>
+              <td>
+                @foreach($reports as $report)
+                @if(date("l",($report->create/1000)) == "Thursday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "dhuha")
+                v
+                @endif
+                @endforeach
+              </td>
+              <td>
+                @foreach($reports as $report)
+                @if(date("l",($report->create/1000)) == "Friday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "dhuha")
+                v
+                @endif
+                @endforeach
+              </td>
+              <td>
+                @foreach($reports as $report)
+                @if(date("l",($report->create/1000)) == "Saturday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "dhuha")
+                v
+                @endif
+                @endforeach
+              </td>
+              <td>
+                @foreach($reports as $report)
+                @if(date("l",($report->create/1000)) == "Sunday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "dhuha")
+                v
+                @endif
+                @endforeach
+              </td>
             </tr>
-            <tr>
-              <td>2</td>
-              <td>rizky</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>rizky</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td>rizky</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-            </tr>
-            <tr>
-              <td>5</td>
-              <td>rizky</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-              <td>V</td>
-            </tr>
+            @endforeach
           </tbody>
         </table>
       </div>
