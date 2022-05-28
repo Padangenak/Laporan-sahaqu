@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="{{ asset('css/main.min.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 </head>
+
 <body style="background: #f1f1f1;">
   <nav class="navbar has-background-dark" role="navigation" aria-label="main navigation">
    <div class="navbar-brand">
@@ -16,13 +17,13 @@
       Al-mulk Project
     </a>
 
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+    <a role="button" class="navbar-burger" aria-label="menu" @click="showNav = !showNav" :class="{ 'is-active': showNav }">
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
     </a>
   </div>
-  <div id="navbarBasicExample" class="navbar-menu">
+  <div id="navbarBasicExample" class="navbar-menu" :class="{ 'is-active': showNav }">
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="buttons">
@@ -60,15 +61,20 @@ $milis = round(microtime(true) * 1000);
 
 </div>
 
-      {{--       @if(date("l",($report->create/1000)) == "Monday" && date("l",($report->create/1000)) == "Tuesday" && date("l",($report->create/1000)) == "Wednesday" && date("l",($report->create/1000)) == "Thursday" && date("l",($report->create/1000)) == "Friday" && date("l",($report->create/1000)) == "Saturday" && date("l",($report->create/1000)) == "Sunday")
 
-      @endif --}}
+<style>
+  .duplicate-container {
 
-      <br>
-{{-- <span style='font-size:100px;'>&#10060;</span>
-<span style='font-size:100px;'>&#128077;</span>
-<span style='font-size:100px;'>&#9989;</span> --}}
-<div class="container">
+}
+
+@media screen and (max-width: 1024px) {
+  .duplicate-container {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+</style>
+<div class="container duplicate-container">
   <br><br>
   @if(session('success'))
   <div class="notification is-success">
@@ -112,7 +118,7 @@ $milis = round(microtime(true) * 1000);
       $collects_dhuha = collect([]);
       @endphp
 
-{{-- array tahajjud, ker nyirian anu ges beres ngerjakeun --}}
+      {{-- array tahajjud, ker nyirian anu ges beres ngerjakeun --}}
 
       @foreach($participants as $participant)
       @foreach($reports as $report)
@@ -124,7 +130,7 @@ $milis = round(microtime(true) * 1000);
       @endforeach
       @endforeach
 
-{{-- array dhuha, ker nyirian anu ges beres ngerjakeun --}}
+      {{-- array dhuha, ker nyirian anu ges beres ngerjakeun --}}
 
       @foreach($participants as $participant)
       @foreach($reports as $report)
@@ -137,7 +143,7 @@ $milis = round(microtime(true) * 1000);
       @endforeach
 
 
-{{-- insert value tahajjud --}}
+      {{-- insert value tahajjud --}}
 
       <div class="card-content">
         <form action="{{ url("tahajjud") }}" method="post">
@@ -165,6 +171,7 @@ $milis = round(microtime(true) * 1000);
         </div>
       </div>
       <div class="card-content">
+        <div class="table-container">
         <table class="table is-fullwidth">
           <thead>
             <tr>
@@ -191,49 +198,49 @@ $milis = round(microtime(true) * 1000);
               <td>
                 @foreach($reports as $report)
                 @if(date("l",($report->create/1000)) == "Monday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "tahajjud")
-                v
+                {{ $report->status }}
                 @endif
                 @endforeach
               </td>
               <td>
                 @foreach($reports as $report)
                 @if(date("l",($report->create/1000)) == "Tuesday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "tahajjud")
-                v
+                {{ $report->status }}
                 @endif
                 @endforeach
               </td>
               <td>
                 @foreach($reports as $report)
                 @if(date("l",($report->create/1000)) == "Wednesday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "tahajjud")
-                v
+                {{ $report->status }}
                 @endif
                 @endforeach
               </td>
               <td>
                 @foreach($reports as $report)
                 @if(date("l",($report->create/1000)) == "Thursday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "tahajjud")
-                v
+                {{ $report->status }}
                 @endif
                 @endforeach
               </td>
               <td>
                 @foreach($reports as $report)
                 @if(date("l",($report->create/1000)) == "Friday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "tahajjud")
-                v
+                {{ $report->status }}
                 @endif
                 @endforeach
               </td>
               <td>
                 @foreach($reports as $report)
                 @if(date("l",($report->create/1000)) == "Saturday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "tahajjud")
-                v
+                {{ $report->status }}
                 @endif
                 @endforeach
               </td>
               <td>
                 @foreach($reports as $report)
                 @if(date("l",($report->create/1000)) == "Sunday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "tahajjud")
-                v
+                {{ $report->status }}
                 @endif
                 @endforeach
               </td>
@@ -243,6 +250,7 @@ $milis = round(microtime(true) * 1000);
           </tbody>
         </table>
       </div>
+      </div>
     </div>
   </div>
 
@@ -250,7 +258,7 @@ $milis = round(microtime(true) * 1000);
   {{-- dhuha tadina arek spa, ngan kagok ah jadi pake is-hidden :3 --}}
 
 
-{{-- insert value dhuha  --}}
+  {{-- insert value dhuha  --}}
 
 
   <div id="dhuha" class="is-hidden">
@@ -286,6 +294,7 @@ $milis = round(microtime(true) * 1000);
         </div>
       </div>
       <div class="card-content">
+        <div class="table-container">
         <table class="table is-fullwidth">
           <thead>
             <tr>
@@ -311,49 +320,49 @@ $milis = round(microtime(true) * 1000);
               <td>
                 @foreach($reports as $report)
                 @if(date("l",($report->create/1000)) == "Monday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "dhuha")
-                v
+                {{ $report->status }}
                 @endif
                 @endforeach
               </td>
               <td>
                 @foreach($reports as $report)
                 @if(date("l",($report->create/1000)) == "Tuesday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "dhuha")
-                v
+                {{ $report->status }}
                 @endif
                 @endforeach
               </td>
               <td>
                 @foreach($reports as $report)
                 @if(date("l",($report->create/1000)) == "Wednesday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "dhuha")
-                v
+                {{ $report->status }}
                 @endif
                 @endforeach
               </td>
               <td>
                 @foreach($reports as $report)
                 @if(date("l",($report->create/1000)) == "Thursday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "dhuha")
-                v
+                {{ $report->status }}
                 @endif
                 @endforeach
               </td>
               <td>
                 @foreach($reports as $report)
                 @if(date("l",($report->create/1000)) == "Friday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "dhuha")
-                v
+                {{ $report->status }}
                 @endif
                 @endforeach
               </td>
               <td>
                 @foreach($reports as $report)
                 @if(date("l",($report->create/1000)) == "Saturday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "dhuha")
-                v
+                {{ $report->status }}
                 @endif
                 @endforeach
               </td>
               <td>
                 @foreach($reports as $report)
                 @if(date("l",($report->create/1000)) == "Sunday" && $report->day_id == $maxdays && $participant->id == $report->participant_id && $report->type == "dhuha")
-                v
+                {{ $report->status }}
                 @endif
                 @endforeach
               </td>
@@ -361,6 +370,7 @@ $milis = round(microtime(true) * 1000);
             @endforeach
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   </div>
@@ -433,6 +443,15 @@ $milis = round(microtime(true) * 1000);
       closeAllModals();
     }
   });
+});
+</script>
+<script src="https://unpkg.com/vue@3"></script>
+<script>
+  new Vue({
+  el: '#app',
+  data: {
+    showNav: false
+  }
 });
 </script>
 </body>
