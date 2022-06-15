@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\participantcontroller;
-use App\Http\Controllers\reportcontroller;
+use App\Http\Controllers\Admin;
+use App\Http\Controllers;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +15,22 @@ use App\Http\Controllers\reportcontroller;
 |
 */
 
-Route::get('/', [participantcontroller::class, 'index']);
-Route::post('tahajjud', [reportcontroller::class, 'tahajjud']);
-Route::post('dhuha', [reportcontroller::class, 'dhuha']);
+
+Route::get('/', [Controllers\participantcontroller::class, 'index']);
+Route::post('tahajjud', [Controllers\reportcontroller::class, 'tahajjud']);
+Route::post('dhuha', [Controllers\reportcontroller::class, 'dhuha']);
+
+Route::group(['middleware' => 'guest'], function () {
+    Route::post('/login', [Controllers\Auth\AuthController::class, 'login'])->name('login');
+});
+
+Route::group(['middleware' => 'auth', 'prefix' => 'admin', 'as' => 'admin'], function () {
+    Route::group(['prefix' => 'participant', 'as' => '.participant'], function () {
+        Route::get('/', [Admin\participantcontroller::class, 'index']);
+        Route::get('/create', [Admin\participantcontroller::class, 'create'])->name('.create');
+        Route::post('/create', [Admin\participantcontroller::class, 'createPost'])->name('.create');
+    });
+
+    Route::get('/', [Admin\DashboardController::class, 'index']);
+    Route::post('/logout', [Controllers\Auth\AuthController::class, 'logout'])->name('.logout');
+});
