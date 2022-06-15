@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\participantcontroller;
+use App\Http\Controllers\reportcontroller;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +15,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [participantcontroller::class, 'index']);
+Route::post('tahajjud', [reportcontroller::class, 'tahajjud']);
+Route::post('dhuha', [reportcontroller::class, 'dhuha']);
