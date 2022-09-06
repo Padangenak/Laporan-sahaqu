@@ -71,8 +71,9 @@ class ParticipantController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function delpost($id)
     {
-        //
+        $id = Participant::find($id)->delete();
+        return redirect('admin/participant')->with('success', "Data di hapus");
     }
 }

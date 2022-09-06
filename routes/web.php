@@ -26,9 +26,10 @@ Route::group(['middleware' => 'guest'], function () {
 
 Route::group(['middleware' => 'auth', 'prefix' => 'admin', 'as' => 'admin'], function () {
     Route::group(['prefix' => 'participant', 'as' => '.participant'], function () {
-        Route::get('/', [Admin\participantcontroller::class, 'index']);
-        Route::get('/create', [Admin\participantcontroller::class, 'create'])->name('.create');
-        Route::post('/create', [Admin\participantcontroller::class, 'createPost'])->name('.create');
+        Route::get('/', [Admin\ParticipantController::class, 'index']);
+        Route::get('/create', [Admin\ParticipantController::class, 'create'])->name('.create');
+        Route::post('/create', [Admin\ParticipantController::class, 'createPost'])->name('.create');
+        Route::get('/del/{id}', [Admin\ParticipantController::class, 'delpost'])->name('.del');
     });
 
     Route::get('/', [Admin\DashboardController::class, 'index']);
